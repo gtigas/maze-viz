@@ -1,0 +1,27 @@
+{
+  "name": "maze-viz",
+  "version": "1.0.0",
+  "description": "Maze-Viz will be both a maze-generating visualization as well as a maze-solving visualization.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "webpack": "^3.8.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gtigas/Maze-Viz.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gtigas/Maze-Viz/issues"
+  },
+  "homepage": "https://github.com/gtigas/Maze-Viz#readme"
+}

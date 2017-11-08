@@ -65,13 +65,69 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
+
 
 document.addEventListener("DOMContentLoaded", () => {
-  canvasEl = document.getElementById("canvas");
-  ctx = canvasEl.getContext("2d");
-  ctx.fillRect(25, 25, 100, 100);
+  const canvasEl = document.getElementById("canvas");
+  const ctx = canvasEl.getContext("2d");
+  ctx.fillStyle = 'white'
+  const asdf = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
+  console.log(asdf)
 });
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__cell__ = __webpack_require__(2);
+
+
+class Maze {
+  constructor(ctx){
+    this.grid = this._populateGrid(ctx);
+    this.ctx = ctx
+  }
+
+  _populateGrid(ctx){
+    const grid = new Array(19)
+    for (var i = 0; i < 19; i++) {
+      grid[i] = new Array(31)
+      for (var j = 0; j < 31; j++) {
+        let renderPositionX = ((j * 25) + 5)
+        let renderPositionY = ((i * 25) + 5)
+        grid[i][j] = new __WEBPACK_IMPORTED_MODULE_0__cell__["a" /* default */](renderPositionX, renderPositionY, ctx);
+      }
+    }
+    return grid
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Maze);
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Cell {
+  constructor(x, y, ctx){
+    this.visited = false;
+    this.xPos = x;
+    this.yPos = y;
+    this.ctx = ctx;
+    this.ctx.fillRect(x, y, 20, 20);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Cell);
 
 
 /***/ })

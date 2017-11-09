@@ -71,15 +71,17 @@
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__generator__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__solver__ = __webpack_require__(4);
+
 
 
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvasEl = document.getElementById("canvas");
   const ctx = canvasEl.getContext("2d");
+  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
   $('#generate-start').click( ()=>{
     ctx.clearRect(0,0,780,480)
-    const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
     const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
     generator.generate();
   })
@@ -87,6 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
   $('#maze-clear').click( ()=>{
     ctx.clearRect(0,0,780,480)
   })
+
+  window.solver = new __WEBPACK_IMPORTED_MODULE_2__solver__["a" /* default */](maze)
+  window.ctx = ctx
 });
 
 
@@ -103,6 +108,8 @@ class Maze {
     this.grid = this._populateGrid(ctx);
     this.ctx = ctx
     this.getCell = this.getCell.bind(this)
+    this.start = this.getCell([0,0])
+    this.end = this.getCell([18,30])
   }
 
   _populateGrid(ctx){
@@ -139,8 +146,11 @@ class Maze {
 "use strict";
 class Cell {
   constructor(pos, x, y, ctx, maze){
+    this.created = false;
     this.visited = false;
+    this.path = false;
     this.pos = pos;
+    this.parent = null;
     this.xPosRender = x;
     this.yPosRender = y;
     this.connectedCells = [];
@@ -164,8 +174,14 @@ class Cell {
     return neighbors
   }
 
-  unvisitedNeighbors(){
+  unvisitedNeighbors(type){
     return this.neighbors().filter( neighbor => {
+      return neighbor[type] === false
+    });
+  }
+
+  unvisitedConnectedCells(){
+    return this.connectedCells.filter( neighbor => {
       return neighbor.visited === false
     });
   }
@@ -176,20 +192,25 @@ class Cell {
   }
 
   draw(){
-    if (this.visited) {
+    if (this.created) {
       this.ctx.fillStyle = 'white'
     } else {
       this.ctx.fillStyle = 'grey'
     }
+    if (this.visited) {
+      this.ctx.fillStyle = 'green'
+    }
+    if (this.path) {
+      this.ctx.fillStyle = 'yellow'
+    }
     if (this.head) {
       this.ctx.fillStyle = 'red'
     }
-    this.ctx.fillRect(this.xPosRender, this.yPosRender, 20, 20);
     this._breakDownWalls();
+    this.ctx.fillRect(this.xPosRender, this.yPosRender, 20, 20);
   }
 
   _breakDownWalls(){
-    this.ctx.fillStyle = 'white'
     if (this._checkNeighborPath('S')) {
       this.ctx.fillRect(this.xPosRender, (this.yPosRender + 20), 20, 20);
     }
@@ -225,9 +246,6 @@ const DIRS = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
-
-
 class MazeGenerator {
   constructor(maze){
     this.maze = maze
@@ -241,19 +259,22 @@ class MazeGenerator {
     $('#generate-start').prop('disabled', true)
     requestAnimationFrame(this.animate)
     this.stack.unshift(this.maze.getCell([0,0]))
-    this.stack[0].visited = true
+    this.stack[0].created = true
     this.visitedCells++
     const renderMaze = setInterval( () => {
       if (this.visitedCells < 590) {
         let currentCell = this.stack[0]
-        let unvisitedNeighbors = currentCell.unvisitedNeighbors()
+        let unvisitedNeighbors = currentCell.unvisitedNeighbors('created')
         if (unvisitedNeighbors.length > 0) {
+          unvisitedNeighbors.forEach( cell => {
+            cell.parent = currentCell
+          })
           let randomCell = unvisitedNeighbors[Math.floor(Math.random() * unvisitedNeighbors.length)]
           this.stack.unshift(randomCell)
           currentCell.connectPath(randomCell)
           currentCell.head = false
           currentCell = randomCell
-          currentCell.visited = true
+          currentCell.created = true
           currentCell.head = true
           this.visitedCells++
         } else {
@@ -264,7 +285,7 @@ class MazeGenerator {
         clearInterval(renderMaze)
         $('#generate-start').prop('disabled', false)
       }
-    }, 15)
+    }, 0)
 
   }
 
@@ -280,6 +301,59 @@ class MazeGenerator {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (MazeGenerator);
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Solver {
+  constructor(maze){
+    this.maze = maze
+    this.stack = [maze.start]
+    this.visitedCells = 1
+    this.solve = this.solve.bind(this)
+    this.colorPath = this.colorPath.bind(this)
+  }
+
+  colorPath(cell) {
+    if (!cell) {
+      return
+    }
+    setTimeout( () => {
+      cell.path = true;
+      cell.draw()
+      this.colorPath(cell.parent)
+    }, 10)
+  }
+
+  solve(){
+    if (this.solved) {
+      return
+    }
+    setTimeout( () => {
+      this.maze.draw();
+      if (this.stack.length > 0) {
+        let currentCell = this.stack.shift()
+        if (!currentCell.visited) {
+          currentCell.visited = true
+          this.visitedCells++
+          this.stack = currentCell.unvisitedConnectedCells().concat(this.stack)
+        }
+        if (this.maze.end === currentCell) {
+          this.colorPath(this.maze.end)
+          this.solved = true
+        } else {
+          this.solve();
+        }
+      }
+    }, 10)
+
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Solver);
 
 
 /***/ })

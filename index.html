@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8">
     <title>Maze-Viz</title>
-    <style>
-      #canvas{
-        background-color: black;
-      }
-    </style>
+    <link rel="stylesheet" href="./assets/styles/style.css">
     <script src="./bundle.js" charset="utf-8"></script>
   </head>
   <body>
-    <canvas id="canvas" width="780" height="480"></canvas>
+    <h1>Maze Viz</h1>
+    <div class="canvas-container">
+      <canvas id="canvas" width="780" height="480"></canvas>
+      <button name="button" id='generate-start'>Generate</button>
+      <button name="button" id='maze-clear'>Clear Maze</button>
+    </div>
   </body>
 </html>

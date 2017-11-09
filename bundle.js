@@ -73,6 +73,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__generator__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prims__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__solver__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dfs__ = __webpack_require__(6);
+
 
 
 
@@ -82,18 +84,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvasEl = document.getElementById("canvas");
   const ctx = canvasEl.getContext("2d");
   const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
-  $('#generate-start').click( ()=>{
+  $('#generate-prims').click( ()=>{
     ctx.clearRect(0,0,780,480)
     const generator = new __WEBPACK_IMPORTED_MODULE_2__prims__["a" /* default */](maze)
     generator.generate();
   })
+  $('#generate-start').click( ()=>{
+    ctx.clearRect(0,0,780,480)
+    const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
+    generator.generate();
+  })
 
   $('#maze-clear').click( ()=>{
+    maze.reset();
     ctx.clearRect(0,0,780,480)
   })
 
-  window.solver = new __WEBPACK_IMPORTED_MODULE_3__solver__["a" /* default */](maze)
-  window.ctx = ctx
+  $('#maze-solve').click( ()=>{
+    const solver = new __WEBPACK_IMPORTED_MODULE_3__solver__["a" /* default */](maze)
+    solver.solve();
+  })
+
+  $('#maze-dfs').click( ()=>{
+    const solver = new __WEBPACK_IMPORTED_MODULE_4__dfs__["a" /* default */](maze)
+    solver.solve();
+  })
+
+
 });
 
 
@@ -112,6 +129,7 @@ class Maze {
     this.getCell = this.getCell.bind(this)
     this.start = this.getCell([0,0])
     this.end = this.getCell([18,30])
+    this.reset = this.reset.bind(this)
   }
 
   _populateGrid(ctx){
@@ -125,6 +143,12 @@ class Maze {
       }
     }
     return grid
+  }
+
+  reset(){
+    this.grid = this._populateGrid(this.ctx);
+    this.start = this.getCell([0,0])
+    this.end = this.getCell([18,30])
   }
 
   getCell(pos){
@@ -219,10 +243,10 @@ class Cell {
 
   _breakDownWalls(){
     if (this._checkNeighborPath('S')) {
-      this.ctx.fillRect(this.xPosRender, (this.yPosRender + 20), 20, 20);
+      this.ctx.fillRect(this.xPosRender, (this.yPosRender + 20), 20, 5);
     }
     if (this._checkNeighborPath('E')) {
-      this.ctx.fillRect(this.xPosRender + 20, this.yPosRender, 20, 20);
+      this.ctx.fillRect(this.xPosRender + 20, this.yPosRender, 5, 20);
     }
   }
 
@@ -307,7 +331,7 @@ class MazeGenerator {
 
 }
 
-/* unused harmony default export */ var _unused_webpack_default_export = (MazeGenerator);
+/* harmony default export */ __webpack_exports__["a"] = (MazeGenerator);
 
 
 /***/ }),
@@ -355,7 +379,7 @@ class Solver {
           this.solve();
         }
       }
-    }, 10)
+    }, 0)
 
   }
 }
@@ -378,8 +402,10 @@ class PrimsGenerator {
   }
 
   generate(){
+    $('#generate-prims').prop('disabled', true)
     if (this.frontier.length === 0) {
       this.maze.draw()
+      $('#generate-prims').prop('disabled', true)
       return
     }
     setTimeout( () => {
@@ -389,6 +415,7 @@ class PrimsGenerator {
         let mazeNeighbors = randomCell.mazeNeighbors();
         let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
         randomCell.connectPath(randomMazeNeighbor)
+        randomCell.parent = randomMazeNeighbor
         randomCell.created = true
         const unvisitedNeighbors = randomCell.unvisitedNeighbors('created')
         unvisitedNeighbors.forEach( cell => {
@@ -406,6 +433,57 @@ class PrimsGenerator {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (PrimsGenerator);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Dfs {
+  constructor(maze){
+    this.maze = maze
+    this.queue = [maze.start]
+    this.solve = this.solve.bind(this)
+    this.colorPath = this.colorPath.bind(this)
+  }
+
+  colorPath(cell) {
+    if (!cell) {
+      return
+    }
+    setTimeout( () => {
+      cell.path = true;
+      cell.draw()
+      this.colorPath(cell.parent)
+    }, 10)
+  }
+
+  solve(){
+    if (this.solved) {
+      return
+    }
+    setTimeout( () => {
+      this.maze.draw();
+      if (this.queue.length > 0) {
+        let currentCell = this.queue.shift()
+        if (!currentCell.visited) {
+          currentCell.visited = true
+          this.queue = this.queue.concat(currentCell.unvisitedConnectedCells())
+        }
+        if (this.maze.end === currentCell) {
+          this.colorPath(this.maze.end)
+          this.solved = true
+        } else {
+          this.solve();
+        }
+      }
+    }, 0)
+
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Dfs);
 
 
 /***/ })

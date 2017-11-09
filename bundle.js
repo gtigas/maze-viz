@@ -182,7 +182,7 @@ class Cell {
       this.ctx.fillStyle = 'grey'
     }
     if (this.head) {
-      this.ctx.fillStyle = 'yellow'
+      this.ctx.fillStyle = 'red'
     }
     this.ctx.fillRect(this.xPosRender, this.yPosRender, 20, 20);
     this._breakDownWalls();
@@ -258,13 +258,13 @@ class MazeGenerator {
           this.visitedCells++
         } else {
           this.stack.shift().head = false;
+          this.stack[0].head = true;
         }
-        console.log(this.visitedCells)
       } else {
         clearInterval(renderMaze)
         $('#generate-start').prop('disabled', false)
       }
-    }, 2)
+    }, 15)
 
   }
 
@@ -274,7 +274,6 @@ class MazeGenerator {
       return
     }
     requestAnimationFrame(this.animate)
-    console.log('draw')
   }
 
 

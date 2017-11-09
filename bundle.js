@@ -78,9 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvasEl = document.getElementById("canvas");
   const ctx = canvasEl.getContext("2d");
   $('#generate-start').click( ()=>{
+    ctx.clearRect(0,0,780,480)
     const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
     const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
     generator.generate();
+  })
+
+  $('#maze-clear').click( ()=>{
+    ctx.clearRect(0,0,780,480)
   })
 });
 
@@ -177,7 +182,7 @@ class Cell {
       this.ctx.fillStyle = 'grey'
     }
     if (this.head) {
-      this.ctx.fillStyle = 'red'
+      this.ctx.fillStyle = 'yellow'
     }
     this.ctx.fillRect(this.xPosRender, this.yPosRender, 20, 20);
     this._breakDownWalls();
@@ -259,13 +264,17 @@ class MazeGenerator {
         clearInterval(renderMaze)
         $('#generate-start').prop('disabled', false)
       }
-    }, 10)
+    }, 2)
 
   }
 
   animate(){
     this.maze.draw();
+    if (this.visitedCells === 590) {
+      return
+    }
     requestAnimationFrame(this.animate)
+    console.log('draw')
   }
 
 

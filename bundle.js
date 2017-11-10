@@ -116,6 +116,8 @@ class Maze {
 
   reset(size){
     this.opts = SIZE_OPTIONS[size]
+    this.width = this.opts.width
+    this.height = this.opts.height
     this.grid = this._populateGrid();
     this.start = this.getCell([0,0])
     this.end = this.getCell([this.height-1, this.width-1])
@@ -179,7 +181,11 @@ const SIZE_OPTIONS = {
   },
 
   'small' : {
-
+    height: 13,
+    width: 21,
+    cellSize: 30,
+    wallSize: 7,
+    mazeOffset: [5,3]
   },
 }
 
@@ -322,10 +328,11 @@ const DIRS = {
 
 
 const bindAll = ctx => {
-  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx, 'large');
+  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx, 'medium');
   $('#generate').click( ()=>{
     disableButtons();
-    maze.reset('large')
+    const mazeSize = rangeText[$("#maze-size").val()].toLowerCase();
+    maze.reset(mazeSize)
     const generatorType = $("input[name='generator']:checked").val();
     let generator;
     switch (generatorType) {
@@ -369,9 +376,20 @@ const bindAll = ctx => {
   $('#random-both').click( ()=>{
     maze.randomize('both')
   })
+
+  $('#range-text').text(rangeText[$("#maze-size").val()])
+  $('#maze-size').on('input change', () => {
+    $('#range-text').text(rangeText[$("#maze-size").val()])
+  })
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = bindAll;
 
+
+const rangeText = {
+  '1' : 'Small',
+  '2' : 'Medium',
+  '3' : 'Large'
+}
 
 const disableButtons = () => {
   $("button").prop('disabled', true)
@@ -517,7 +535,6 @@ class DFSSolver {
 
   solve(i = 1){
     if (this.solved) {
-      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
       return
     }
     setTimeout( () => {
@@ -535,6 +552,7 @@ class DFSSolver {
         currentCell.head = false;
         if (this.maze.end === currentCell) {
           this.colorPath(this.maze.end)
+          Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
           this.solved = true
         } else {
           i++
@@ -596,6 +614,7 @@ class BFSSolver {
         currentCell.head = false;
         if (this.maze.end === currentCell) {
           this.colorPath(this.maze.end)
+          Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
           this.solved = true
         } else {
           i++

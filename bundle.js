@@ -75,7 +75,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 document.addEventListener("DOMContentLoaded", () => {
   const canvasEl = document.getElementById("canvas");
   const ctx = canvasEl.getContext("2d");
-  Object(__WEBPACK_IMPORTED_MODULE_0__binders__["a" /* default */])(ctx);
+  Object(__WEBPACK_IMPORTED_MODULE_0__binders__["a" /* bindAll */])(ctx);
 });
 
 
@@ -277,6 +277,10 @@ const DIRS = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+
+
+
 class MazeGenerator {
   constructor(maze){
     this.maze = maze
@@ -286,7 +290,6 @@ class MazeGenerator {
   }
 
   generate(){
-    $('#generate-start').prop('disabled', true)
     this.stack.unshift(this.maze.getCell([0,0]))
     this.stack[0].created = true
     this.visitedCells++
@@ -311,7 +314,7 @@ class MazeGenerator {
       } else {
         clearInterval(renderMaze)
         this.maze.draw('solve');
-        $('#generate-start').prop('disabled', false)
+        Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
       }
     }, 0)
 
@@ -384,6 +387,10 @@ class Solver {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+
+
+
 class PrimsGenerator {
   constructor(maze){
     this.maze = maze
@@ -394,10 +401,9 @@ class PrimsGenerator {
   }
 
   generate(){
-    $('#generate-prims').prop('disabled', true)
     if (this.frontier.length === 0) {
       this.maze.draw('solve')
-      $('#generate-prims').prop('disabled', false)
+      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
       return
     }
     setTimeout( () => {
@@ -503,12 +509,14 @@ class Dfs {
 const bindAll = ctx => {
   const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
   $('#generate-prims').click( ()=>{
+    disableButtons();
     maze.reset()
     ctx.clearRect(0,0,780,480)
     const generator = new __WEBPACK_IMPORTED_MODULE_2__prims__["a" /* default */](maze)
     generator.generate();
   })
   $('#generate-start').click( ()=>{
+    disableButtons();
     maze.reset()
     ctx.clearRect(0,0,780,480)
     const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
@@ -540,8 +548,18 @@ const bindAll = ctx => {
     maze.randomize('both')
   })
 }
+/* harmony export (immutable) */ __webpack_exports__["a"] = bindAll;
 
-/* harmony default export */ __webpack_exports__["a"] = (bindAll);
+
+const disableButtons = () => {
+  $("button").prop('disabled', true)
+}
+
+const enableButtons = () => {
+  $("button").prop('disabled', false)
+}
+/* harmony export (immutable) */ __webpack_exports__["b"] = enableButtons;
+
 
 
 /***/ })

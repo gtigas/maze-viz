@@ -319,9 +319,11 @@ const DIRS = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dfs_generator__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prims_generator__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__bfs_solver__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dfs_solver__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__util__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__grid_generator__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__bfs_solver__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__dfs_solver__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__util__ = __webpack_require__(12);
+
 
 
 
@@ -344,6 +346,9 @@ const bindAll = ctx => {
       case 'dfs':
         generator = new __WEBPACK_IMPORTED_MODULE_1__dfs_generator__["a" /* default */](maze)
         break;
+      case 'matrix':
+        generator = new __WEBPACK_IMPORTED_MODULE_3__grid_generator__["a" /* default */](maze)
+        break;
     }
     ctx.clearRect(0,0,780,480)
     generator.generate();
@@ -354,29 +359,25 @@ const bindAll = ctx => {
   })
 
   $('#solve').click( ()=>{
-    Object(__WEBPACK_IMPORTED_MODULE_5__util__["b" /* resetPathDistance */])();
+    Object(__WEBPACK_IMPORTED_MODULE_6__util__["b" /* resetPathDistance */])();
     disableButtons();
     maze.unSolve();
     const solverType = $("input[name='solver']:checked").val();
     let solver;
     switch (solverType) {
       case 'bfs':
-        solver = new __WEBPACK_IMPORTED_MODULE_3__bfs_solver__["a" /* default */](maze)
+        solver = new __WEBPACK_IMPORTED_MODULE_4__bfs_solver__["a" /* default */](maze)
         break;
       case 'dfs':
-        solver = new __WEBPACK_IMPORTED_MODULE_4__dfs_solver__["a" /* default */](maze)
+        solver = new __WEBPACK_IMPORTED_MODULE_5__dfs_solver__["a" /* default */](maze)
         break;
     }
     solver.solve();
   })
 
-  $('#random-start').click( ()=>{
-    maze.randomize('start')
-  })
-  $('#random-end').click( ()=>{
-    maze.randomize('end')
-  })
   $('#random-both').click( ()=>{
+    Object(__WEBPACK_IMPORTED_MODULE_6__util__["b" /* resetPathDistance */])();
+    maze.unSolve();
     maze.randomize('both')
   })
 
@@ -656,6 +657,69 @@ const incrementPathDistance = () => {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = incrementPathDistance;
 
+
+// Source: femto113 via github
+// https://gist.github.com/femto113/1784503
+const transpose = (a) => a[0].map((_, c) => a.map(r => r[c]));
+/* harmony export (immutable) */ __webpack_exports__["c"] = transpose;
+
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(12);
+
+
+
+
+class MatrixGenerator {
+  constructor(maze) {
+    this.maze = maze
+  }
+
+  generate() {
+    const rows = this.maze.grid
+    const cols = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* transpose */])(this.maze.grid)
+    console.log(rows);
+    console.log(cols);
+    rows.forEach( row => {
+      for (var i = 0; i < row.length - 1; i++) {
+        let cell = row[i]
+        cell.connectPath(row[i + 1])
+        cell.created = true
+        cell.draw()
+        if (i === row.length - 2) {
+          let lastCell = row[i + 1]
+          lastCell.created = true
+          lastCell.draw()
+        }
+      }
+    })
+
+    cols.forEach( (col, colIdx) => {
+      for (var i = 0; i < col.length - 1; i++) {
+        if (colIdx % 2 === 0) { continue }
+        let cell = col[i]
+        cell.connectPath(col[i + 1])
+        cell.created = true
+        cell.draw()
+        if (i === col.length - 2) {
+          let lastCell = col[i + 1]
+          lastCell.created = true
+          lastCell.draw()
+        }
+      }
+    })
+    this.maze.draw('solve');
+    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (MatrixGenerator);
 
 
 /***/ })

@@ -88,32 +88,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 class Maze {
-  constructor(ctx){
-    this.grid = this._populateGrid(ctx);
+  constructor(ctx, size){
+    this.opts = SIZE_OPTIONS[size]
     this.ctx = ctx
+    this.width = this.opts.width
+    this.height = this.opts.height
     this.getCell = this.getCell.bind(this)
-    this.start = this.getCell([0,0])
-    this.end = this.getCell([18,30])
     this.reset = this.reset.bind(this)
+    this._populateGrid = this._populateGrid.bind(this)
+    this.grid = this._populateGrid();
+    console.log(this)
   }
 
-  _populateGrid(ctx){
-    const grid = new Array(19)
-    for (var i = 0; i < 19; i++) {
-      grid[i] = new Array(31)
-      for (var j = 0; j < 31; j++) {
-        let renderPositionX = ((j * 25) + 5)
-        let renderPositionY = ((i * 25) + 5)
-        grid[i][j] = new __WEBPACK_IMPORTED_MODULE_0__cell__["a" /* default */]([i,j], renderPositionX, renderPositionY, ctx, this);
+  _populateGrid(){
+    const grid = new Array(this.height)
+    for (var i = 0; i < this.height; i++) {
+      grid[i] = new Array(this.width)
+      for (var j = 0; j < this.width; j++) {
+        let cellOffset = this.opts.cellSize + this.opts.wallSize
+        let renderPositionX = ((j * cellOffset) + this.opts.mazeOffset[0])
+        let renderPositionY = ((i * cellOffset) + this.opts.mazeOffset[1])
+        grid[i][j] = new __WEBPACK_IMPORTED_MODULE_0__cell__["a" /* default */]([i,j], renderPositionX, renderPositionY, this.ctx, this);
       }
     }
     return grid
   }
 
   reset(){
-    this.grid = this._populateGrid(this.ctx);
+    this.grid = this._populateGrid();
     this.start = this.getCell([0,0])
-    this.end = this.getCell([18,30])
+    this.end = this.getCell([this.height-1, this.width-1])
   }
 
   unSolve(){
@@ -143,17 +147,39 @@ class Maze {
 
   draw(opt){
     this.allCells().forEach( cell => cell.draw() )
+    const cellSize = this.opts.cellSize
     if (opt === 'solve') {
       this.ctx.fillStyle = 'green'
-      this.ctx.fillRect(this.start.xPosRender, this.start.yPosRender, 20, 20);
+      this.ctx.fillRect(this.start.xPosRender, this.start.yPosRender, cellSize, cellSize);
       this.ctx.fillStyle = 'red'
-      this.ctx.fillRect(this.end.xPosRender, this.end.yPosRender, 20, 20);
+      this.ctx.fillRect(this.end.xPosRender, this.end.yPosRender, cellSize, cellSize);
     }
   }
 
   allCells(){
     return [].concat(...this.grid)
   }
+}
+
+const SIZE_OPTIONS = {
+  'large' : {
+    height: 29,
+    width: 48,
+    cellSize: 13,
+    wallSize: 3,
+    mazeOffset: [6,8]
+  },
+  'medium' : {
+    height: 19,
+    width: 31,
+    cellSize: 20,
+    wallSize: 5,
+    mazeOffset: [5,5]
+  },
+
+  'small' : {
+
+  },
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Maze);
@@ -238,15 +264,17 @@ class Cell {
       this.ctx.fillStyle = 'red'
     }
     this._breakDownWalls();
-    this.ctx.fillRect(this.xPosRender, this.yPosRender, 20, 20);
+    const cellSize = this.maze.opts.cellSize
+    this.ctx.fillRect(this.xPosRender, this.yPosRender, cellSize, cellSize);
   }
 
   _breakDownWalls(){
+    const { cellSize, wallSize } = this.maze.opts
     if (this._checkNeighborPath('S')) {
-      this.ctx.fillRect(this.xPosRender, (this.yPosRender + 20), 20, 5);
+      this.ctx.fillRect(this.xPosRender, (this.yPosRender + cellSize), cellSize, wallSize);
     }
     if (this._checkNeighborPath('E')) {
-      this.ctx.fillRect(this.xPosRender + 20, this.yPosRender, 5, 20);
+      this.ctx.fillRect(this.xPosRender + cellSize, this.yPosRender, wallSize, cellSize);
     }
   }
 
@@ -258,7 +286,7 @@ class Cell {
   }
 
   _isInvalidPosition(pos){
-    return ((pos[0] < 0 || pos[0] > 18) || (pos[1] < 0 || pos[1] > 30))
+    return ((pos[0] < 0 || pos[0] > (this.maze.height - 1)) || (pos[1] < 0 || pos[1] > (this.maze.width - 1)))
   }
 }
 
@@ -285,7 +313,7 @@ class MazeGenerator {
   constructor(maze){
     this.maze = maze
     this.stack = []
-    this.visitedCells = 1
+    this.visitedCells = 0
     this.generate = this.generate.bind(this)
   }
 
@@ -295,7 +323,7 @@ class MazeGenerator {
     this.visitedCells++
     const renderMaze = setInterval( () => {
       this.maze.draw()
-      if (this.visitedCells < 590) {
+      if (this.visitedCells < ((this.maze.width) * (this.maze.height))) {
         let currentCell = this.stack[0]
         currentCell.head = true
         let unvisitedNeighbors = currentCell.unvisitedNeighbors('created')
@@ -397,7 +425,6 @@ class PrimsGenerator {
   constructor(maze){
     this.maze = maze
     this.frontier = maze.start.unvisitedNeighbors('created')
-    this.visitedCells = 1
     this.generate = this.generate.bind(this)
     maze.start.created = true
   }
@@ -511,7 +538,7 @@ class Dfs {
 
 
 const bindAll = ctx => {
-  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
+  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx, 'medium');
   $('#generate-prims').click( ()=>{
     disableButtons();
     maze.reset()

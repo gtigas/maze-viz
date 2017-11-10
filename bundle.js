@@ -69,52 +69,13 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__generator__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prims__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__solver__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dfs__ = __webpack_require__(6);
-
-
-
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
 
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvasEl = document.getElementById("canvas");
   const ctx = canvasEl.getContext("2d");
-  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
-  $('#generate-prims').click( ()=>{
-    ctx.clearRect(0,0,780,480)
-    const generator = new __WEBPACK_IMPORTED_MODULE_2__prims__["a" /* default */](maze)
-    generator.generate();
-  })
-  $('#generate-start').click( ()=>{
-    ctx.clearRect(0,0,780,480)
-    const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
-    generator.generate();
-  })
-
-  $('#clear-button').click( ()=>{
-    maze.reset();
-    ctx.clearRect(0,0,780,480)
-  })
-
-  $('#reset-button').click( ()=>{
-    maze.unSolve();
-  })
-
-  $('#maze-solve').click( ()=>{
-    const solver = new __WEBPACK_IMPORTED_MODULE_3__solver__["a" /* default */](maze)
-    solver.solve();
-  })
-
-  $('#maze-dfs').click( ()=>{
-    const solver = new __WEBPACK_IMPORTED_MODULE_4__dfs__["a" /* default */](maze)
-    solver.solve();
-  })
-
-
+  Object(__WEBPACK_IMPORTED_MODULE_0__binders__["a" /* default */])(ctx);
 });
 
 
@@ -156,8 +117,7 @@ class Maze {
   }
 
   unSolve(){
-    const allCells = [].concat(...this.grid)
-    allCells.forEach( cell => {
+    this.allCells().forEach( cell => {
       cell.path = false;
       cell.visited = false
       cell.draw();
@@ -169,9 +129,29 @@ class Maze {
     return this.grid[x][y]
   }
 
-  draw(){
-    const allCells = [].concat(...this.grid)
-    allCells.forEach( cell => cell.draw() )
+  randomize(opt){
+    const allCells = this.allCells();
+    if (opt === 'both') {
+      this.start = allCells[Math.floor(Math.random() * allCells.length)]
+      this.end = allCells[Math.floor(Math.random() * allCells.length)]
+    } else {
+      this[opt] = allCells[Math.floor(Math.random() * allCells.length)]
+    }
+    this.draw('solve')
+  }
+
+  draw(opt){
+    this.allCells().forEach( cell => cell.draw() )
+    if (opt === 'solve') {
+      this.ctx.fillStyle = 'green'
+      this.ctx.fillRect(this.start.xPosRender, this.start.yPosRender, 20, 20);
+      this.ctx.fillStyle = 'red'
+      this.ctx.fillRect(this.end.xPosRender, this.end.yPosRender, 20, 20);
+    }
+  }
+
+  allCells(){
+    return [].concat(...this.grid)
   }
 }
 
@@ -244,7 +224,7 @@ class Cell {
       this.ctx.fillStyle = "rgba(0, 0, 200, 0)"
     }
     if (this.visited) {
-      this.ctx.fillStyle = 'green'
+      this.ctx.fillStyle = 'lightgreen'
     }
     if (this.path) {
       this.ctx.fillStyle = 'yellow'
@@ -313,9 +293,6 @@ class MazeGenerator {
         currentCell.head = true
         let unvisitedNeighbors = currentCell.unvisitedNeighbors('created')
         if (unvisitedNeighbors.length > 0) {
-          unvisitedNeighbors.forEach( cell => {
-            cell.parent = currentCell
-          })
           let randomCell = unvisitedNeighbors[Math.floor(Math.random() * unvisitedNeighbors.length)]
           this.stack.unshift(randomCell)
           currentCell.connectPath(randomCell)
@@ -358,7 +335,6 @@ class Solver {
   constructor(maze){
     this.maze = maze
     this.stack = [maze.start]
-    this.visitedCells = 1
     this.solve = this.solve.bind(this)
     this.colorPath = this.colorPath.bind(this)
   }
@@ -379,13 +355,14 @@ class Solver {
       return
     }
     setTimeout( () => {
-      this.maze.draw();
+      this.maze.draw('solve');
       if (this.stack.length > 0) {
         let currentCell = this.stack.shift()
         if (!currentCell.visited) {
           currentCell.visited = true
-          this.visitedCells++
-          this.stack = currentCell.unvisitedConnectedCells().concat(this.stack)
+          let connectedNeighbors = currentCell.unvisitedConnectedCells()
+          connectedNeighbors.forEach( cell => cell.parent = currentCell)
+          this.stack = connectedNeighbors.concat(this.stack)
         }
         if (this.maze.end === currentCell) {
           this.colorPath(this.maze.end)
@@ -481,12 +458,14 @@ class Dfs {
       return
     }
     setTimeout( () => {
-      this.maze.draw();
+      this.maze.draw('solve');
       if (this.queue.length > 0) {
         let currentCell = this.queue.shift()
         if (!currentCell.visited) {
           currentCell.visited = true
-          this.queue = this.queue.concat(currentCell.unvisitedConnectedCells())
+          let connectedNeighbors = currentCell.unvisitedConnectedCells()
+          connectedNeighbors.forEach( cell => cell.parent = currentCell)
+          this.queue = this.queue.concat(connectedNeighbors)
         }
         if (this.maze.end === currentCell) {
           this.colorPath(this.maze.end)
@@ -501,6 +480,67 @@ class Dfs {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Dfs);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__generator__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prims__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__solver__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dfs__ = __webpack_require__(6);
+
+
+
+
+
+
+const bindAll = ctx => {
+  const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
+  $('#generate-prims').click( ()=>{
+    ctx.clearRect(0,0,780,480)
+    const generator = new __WEBPACK_IMPORTED_MODULE_2__prims__["a" /* default */](maze)
+    generator.generate();
+  })
+  $('#generate-start').click( ()=>{
+    ctx.clearRect(0,0,780,480)
+    const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
+    generator.generate();
+  })
+
+  $('#clear-button').click( ()=>{
+    maze.reset();
+    ctx.clearRect(0,0,780,480)
+  })
+
+  $('#reset-button').click( ()=>{
+    maze.unSolve();
+  })
+
+  $('#maze-solve').click( ()=>{
+    const solver = new __WEBPACK_IMPORTED_MODULE_3__solver__["a" /* default */](maze)
+    solver.solve();
+  })
+
+  $('#maze-dfs').click( ()=>{
+    const solver = new __WEBPACK_IMPORTED_MODULE_4__dfs__["a" /* default */](maze)
+    solver.solve();
+  })
+  $('#random-start').click( ()=>{
+    maze.randomize('start')
+  })
+  $('#random-end').click( ()=>{
+    maze.randomize('end')
+  })
+  $('#random-both').click( ()=>{
+    maze.randomize('both')
+  })
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (bindAll);
 
 
 /***/ })

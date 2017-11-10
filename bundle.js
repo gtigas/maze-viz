@@ -334,6 +334,7 @@ const DIRS = {
 const bindAll = ctx => {
   const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx, 'medium');
   $('#generate').click( ()=>{
+    $('.arrow-container').hide();
     disableButtons();
     const mazeSize = rangeText[$("#maze-size").val()].toLowerCase();
     maze.reset(mazeSize)
@@ -354,6 +355,7 @@ const bindAll = ctx => {
     generator.generate();
   })
   $('#generate-fast').click( ()=>{
+    $('.arrow-container').hide();
     disableButtons();
     const mazeSize = rangeText[$("#maze-size").val()].toLowerCase();
     maze.reset(mazeSize)

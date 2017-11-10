@@ -25,7 +25,7 @@
         <h3>Maze Size</h3>
         <input type="range" id="maze-size" name="maze-size" min="1" max="3" step="1">
         <h4 id="range-text">Medium</h4>
-        <h3>Generate</h3>
+        <h3>Generator</h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="generator" value="prims" checked> Prims Algorithm
@@ -39,7 +39,7 @@
         </div>
         <button name="button" id='generate'>Generate</button>
         <button name="button" id='generate-fast'>Generate (fast)</button>
-        <h3>Solve</h3>
+        <h3>Solver</h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="solver" value="bfs" checked> Breadth-First Search
@@ -54,6 +54,11 @@
         <h5>Path distance:
           <strong id='path'>0</strong>
         </h5>
+        <div class="arrow-container">
+          <div class="arrow_box">
+            <h3>Hit generate to generate a maze!</h3>
+          </div>
+        </div>
       </div>
     </div>
     <p>By <a href="http://glenn.tig.as/">Glenn Tigas</a></p>

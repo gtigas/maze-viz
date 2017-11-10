@@ -24,7 +24,7 @@
         <h2>Options</h2>
         <h3>Maze Size</h3>
         <input type="range" id="maze-size" name="maze-size" min="1" max="3" step="1">
-        <h4 id="range-text"></h4>
+        <h4 id="range-text">Medium</h4>
         <h3>Generate</h3>
         <div class='gen-options'>
           <label>
@@ -35,7 +35,6 @@
           </label>
         </div>
         <button name="button" id='generate'>Generate</button>
-        <br/>
         <h3>Solve</h3>
         <div class='gen-options'>
           <label>
@@ -46,11 +45,11 @@
           </label>
         </div>
         <button name="button" id='solve' disabled >Solve</button>
-        <!-- <button name="button" id='reset-button' disabled >Reset Maze</button> -->
+        <button name="button" id='random-both' disabled >Randomize Start/End</button>
         <br/>
-        <!-- <button name="button" id='random-start' disabled >Randomize Start</button>
-        <button name="button" id='random-end' disabled >Randomize End</button>
-        <button name="button" id='random-both' disabled >Randomize Both</button> -->
+        <h5>Path distance:
+          <strong id='path'>0</strong>
+        </h5>
       </div>
     </div>
     <p>By <a href="http://glenn.tig.as/">Glenn Tigas</a></p>

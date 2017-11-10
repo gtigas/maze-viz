@@ -321,6 +321,8 @@ const DIRS = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prims_generator__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__bfs_solver__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dfs_solver__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__util__ = __webpack_require__(12);
+
 
 
 
@@ -352,6 +354,7 @@ const bindAll = ctx => {
   })
 
   $('#solve').click( ()=>{
+    Object(__WEBPACK_IMPORTED_MODULE_5__util__["b" /* resetPathDistance */])();
     disableButtons();
     maze.unSolve();
     const solverType = $("input[name='solver']:checked").val();
@@ -512,6 +515,8 @@ class PrimsGenerator {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(12);
+
 
 
 class DFSSolver {
@@ -530,6 +535,7 @@ class DFSSolver {
       cell.path = true;
       cell.draw()
       this.colorPath(cell.parent)
+      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
     }, 2)
   }
 
@@ -573,6 +579,9 @@ class DFSSolver {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(12);
+
+
 
 
 class BFSSolver {
@@ -591,12 +600,12 @@ class BFSSolver {
       cell.path = true;
       cell.draw()
       this.colorPath(cell.parent)
+      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
     }, 2)
   }
 
   solve(i = 1){
     if (this.solved) {
-      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
       return
     }
     setTimeout( () => {
@@ -627,6 +636,26 @@ class BFSSolver {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (BFSSolver);
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const resetPathDistance  = () => {
+  $("#path").text("0")
+}
+/* harmony export (immutable) */ __webpack_exports__["b"] = resetPathDistance;
+
+
+const incrementPathDistance = () => {
+  let currentDistance = parseInt($("#path").text())
+  currentDistance++
+  $("#path").text(currentDistance)
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = incrementPathDistance;
+
 
 
 /***/ })

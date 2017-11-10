@@ -34,7 +34,7 @@ h1 {
 
 h2, h3, h4 {
   margin: 5px 0;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   color: black;
 }
 
@@ -45,6 +45,12 @@ h3 {
 
 h4 {
   font-weight: 400;
+  margin-bottom: 5px;
+}
+
+h5 {
+  color: black;
+  font-size: 15px;
 }
 
 .nav {
@@ -111,11 +117,12 @@ p {
   border: none;
   color: #fff;
   background-color: black;
-  padding: 15px 30px;
+  padding: 7px 30px;
   letter-spacing: 1px;
   text-transform: uppercase;
+  margin: 0 auto;
   margin-top: 10px;
-  width: 100%;
+  width: 118px;
 }
 
 .menu button:disabled {
@@ -134,7 +141,7 @@ p {
 .menu button:hover {
   box-shadow: 5px 5px 5px #888888;
   color: black;
-  background-color: #fff;
+  background-color: #ECE9E6;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -144,7 +151,7 @@ p {
 
 input[type=range] {
   -webkit-appearance: none;
-  margin: 18px auto;
+  margin: 11px auto;
   width: 100px;
 }
 input[type=range]:focus {
@@ -163,7 +170,7 @@ input[type=range]::-webkit-slider-runnable-track {
 input[type=range]::-webkit-slider-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
-  height: 36px;
+  height: 30px;
   width: 16px;
   border-radius: 3px;
   background: #ffffff;
@@ -187,7 +194,7 @@ input[type=range]::-moz-range-track {
 input[type=range]::-moz-range-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
-  height: 36px;
+  height: 20px;
   width: 16px;
   border-radius: 3px;
   background: #ffffff;
@@ -218,7 +225,7 @@ input[type=range]::-ms-fill-upper {
 input[type=range]::-ms-thumb {
   box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   border: 1px solid #000000;
-  height: 36px;
+  height: 20px;
   width: 16px;
   border-radius: 3px;
   background: #ffffff;

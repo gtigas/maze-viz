@@ -2,7 +2,14 @@ body {
   background: #283048;
   background: -webkit-linear-gradient(to right, #859398, #283048);
   background: linear-gradient(to right, #859398, #283048);
+  color: white;
+  text-align: center;
+  font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
 }
+
+a { text-decoration: none; color: white; }
+a:visited { text-decoration: none; color:white; }
+a:hover { color: lightgreen }
 
 #canvas{
   background-color: black;
@@ -17,9 +24,22 @@ body {
 
 h1 {
   text-align: center;
-  font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
   font-size: 50px;
   line-height: 65px;
-  color: white;
   text-shadow: -1px -1px 1px #FFFFFF, 1px 1px 1px #000000;
+  font-weight: 700
+}
+
+p {
+	font-size: 24px;
+	line-height: 25px;
+  font-weight: 400
+}
+
+.contact-links {
+  margin: 0 auto;
+}
+
+.contact-links i {
+  font-size: 35px;
 }

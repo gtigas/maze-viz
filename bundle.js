@@ -317,11 +317,11 @@ const DIRS = {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dfs_generator__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__prims_generator__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__grid_generator__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__bfs_solver__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__dfs_solver__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__generators_dfs_generator__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__generators_prims_generator__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__generators_grid_generator__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__solvers_bfs_solver__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__solvers_dfs_solver__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__util__ = __webpack_require__(12);
 
 
@@ -341,17 +341,39 @@ const bindAll = ctx => {
     let generator;
     switch (generatorType) {
       case 'prims':
-        generator = new __WEBPACK_IMPORTED_MODULE_2__prims_generator__["a" /* default */](maze)
+        generator = new __WEBPACK_IMPORTED_MODULE_2__generators_prims_generator__["a" /* default */](maze)
         break;
       case 'dfs':
-        generator = new __WEBPACK_IMPORTED_MODULE_1__dfs_generator__["a" /* default */](maze)
+        generator = new __WEBPACK_IMPORTED_MODULE_1__generators_dfs_generator__["a" /* default */](maze)
         break;
       case 'matrix':
-        generator = new __WEBPACK_IMPORTED_MODULE_3__grid_generator__["a" /* default */](maze)
+        generator = new __WEBPACK_IMPORTED_MODULE_3__generators_grid_generator__["a" /* default */](maze)
         break;
     }
     ctx.clearRect(0,0,780,480)
     generator.generate();
+  })
+  $('#generate-fast').click( ()=>{
+    disableButtons();
+    const mazeSize = rangeText[$("#maze-size").val()].toLowerCase();
+    maze.reset(mazeSize)
+    const generatorType = $("input[name='generator']:checked").val();
+    let generator;
+    switch (generatorType) {
+      case 'prims':
+        generator = new __WEBPACK_IMPORTED_MODULE_2__generators_prims_generator__["a" /* default */](maze)
+        break;
+      case 'dfs':
+        generator = new __WEBPACK_IMPORTED_MODULE_1__generators_dfs_generator__["a" /* default */](maze)
+        break;
+      case 'matrix':
+        generator = new __WEBPACK_IMPORTED_MODULE_3__generators_grid_generator__["a" /* default */](maze)
+        ctx.clearRect(0,0,780,480)
+        generator.generate();
+        return
+    }
+    ctx.clearRect(0,0,780,480)
+    generator.generateFast();
   })
 
   $('#reset-button').click( ()=>{
@@ -366,10 +388,10 @@ const bindAll = ctx => {
     let solver;
     switch (solverType) {
       case 'bfs':
-        solver = new __WEBPACK_IMPORTED_MODULE_4__bfs_solver__["a" /* default */](maze)
+        solver = new __WEBPACK_IMPORTED_MODULE_4__solvers_bfs_solver__["a" /* default */](maze)
         break;
       case 'dfs':
-        solver = new __WEBPACK_IMPORTED_MODULE_5__dfs_solver__["a" /* default */](maze)
+        solver = new __WEBPACK_IMPORTED_MODULE_5__solvers_dfs_solver__["a" /* default */](maze)
         break;
     }
     solver.solve();
@@ -407,7 +429,38 @@ const enableButtons = () => {
 
 
 /***/ }),
-/* 8 */
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const resetPathDistance  = () => {
+  $("#path").text("0")
+}
+/* harmony export (immutable) */ __webpack_exports__["b"] = resetPathDistance;
+
+
+const incrementPathDistance = () => {
+  let currentDistance = parseInt($("#path").text())
+  currentDistance++
+  $("#path").text(currentDistance)
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = incrementPathDistance;
+
+
+// Source: femto113 via github
+// https://gist.github.com/femto113/1784503
+const transpose = (a) => a[0].map((_, c) => a.map(r => r[c]));
+/* harmony export (immutable) */ __webpack_exports__["c"] = transpose;
+
+
+
+/***/ }),
+/* 13 */,
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -424,6 +477,27 @@ class DFSGenerator {
     this.stack[0].created = true
   }
 
+  generateFast(){
+    while (this.visitedCells < ((this.maze.width) * (this.maze.height))) {
+      let currentCell = this.stack[0]
+      currentCell.head = true
+      let unvisitedNeighbors = currentCell.unvisitedNeighbors('created')
+      if (unvisitedNeighbors.length > 0) {
+        let randomCell = unvisitedNeighbors[Math.floor(Math.random() * unvisitedNeighbors.length)]
+        this.stack.unshift(randomCell)
+        currentCell.connectPath(randomCell)
+        currentCell.head = false
+        currentCell = randomCell
+        currentCell.created = true
+        this.visitedCells++
+      } else {
+        this.stack.shift().head = false;
+        this.stack[0].head = true;
+      }
+    }
+    this.maze.draw('solve');
+    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+  }
   generate(){
     if (this.visitedCells === ((this.maze.width) * (this.maze.height))) {
       this.maze.draw('solve');
@@ -459,7 +533,7 @@ class DFSGenerator {
 
 
 /***/ }),
-/* 9 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -475,6 +549,27 @@ class PrimsGenerator {
     this.maze.start.created = true
   }
 
+  generateFast(){
+    while (this.frontier.length > 0) {
+      let randomCell = this.frontier.splice([Math.floor(Math.random() * this.frontier.length)], 1)[0]
+      randomCell.head = true
+      let mazeNeighbors = randomCell.mazeNeighbors();
+      let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
+      randomCell.connectPath(randomMazeNeighbor)
+      randomCell.parent = randomMazeNeighbor
+      randomCell.created = true
+      const unvisitedNeighbors = randomCell.unvisitedNeighbors('created')
+      unvisitedNeighbors.forEach( cell => {
+        this.frontier = this.frontier.filter( frontier => {
+          return frontier.pos.toString() !== cell.pos.toString()
+        })
+      })
+      this.frontier = this.frontier.concat(unvisitedNeighbors)
+      randomCell.head = false
+    }
+    this.maze.draw('solve')
+    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+  }
   generate(){
     if (this.frontier.length === 0) {
       this.maze.draw('solve')
@@ -511,7 +606,7 @@ class PrimsGenerator {
 
 
 /***/ }),
-/* 10 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -520,62 +615,53 @@ class PrimsGenerator {
 
 
 
-class DFSSolver {
-  constructor(maze){
+
+class MatrixGenerator {
+  constructor(maze) {
     this.maze = maze
-    this.stack = [maze.start]
-    this.solve = this.solve.bind(this)
-    this.colorPath = this.colorPath.bind(this)
   }
 
-  colorPath(cell) {
-    if (!cell) {
-      return
-    }
-    setTimeout( () => {
-      cell.path = true;
-      cell.draw()
-      this.colorPath(cell.parent)
-      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
-    }, 2)
-  }
-
-  solve(i = 1){
-    if (this.solved) {
-      return
-    }
-    setTimeout( () => {
-      if (this.stack.length > 0) {
-        let currentCell = this.stack.shift()
-        currentCell.head = true;
-        this.maze.draw('solve');
-        if (!currentCell.visited) {
-          currentCell.visited = true
-          currentCell.i = i
-          let connectedNeighbors = currentCell.unvisitedConnectedCells()
-          connectedNeighbors.forEach( cell => cell.parent = currentCell)
-          this.stack = connectedNeighbors.concat(this.stack)
-        }
-        currentCell.head = false;
-        if (this.maze.end === currentCell) {
-          this.colorPath(this.maze.end)
-          Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
-          this.solved = true
-        } else {
-          i++
-          this.solve(i);
+  generate() {
+    const rows = this.maze.grid
+    const cols = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* transpose */])(this.maze.grid)
+    rows.forEach( row => {
+      for (var i = 0; i < row.length - 1; i++) {
+        let cell = row[i]
+        cell.connectPath(row[i + 1])
+        cell.created = true
+        cell.draw()
+        if (i === row.length - 2) {
+          let lastCell = row[i + 1]
+          lastCell.created = true
+          lastCell.draw()
         }
       }
-    }, 0)
+    })
 
+    cols.forEach( (col, colIdx) => {
+      for (var i = 0; i < col.length - 1; i++) {
+        if (colIdx % 2 === 0) { continue }
+        let cell = col[i]
+        cell.connectPath(col[i + 1])
+        cell.created = true
+        cell.draw()
+        if (i === col.length - 2) {
+          let lastCell = col[i + 1]
+          lastCell.created = true
+          lastCell.draw()
+        }
+      }
+    })
+    this.maze.draw('solve');
+    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
   }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (DFSSolver);
+/* harmony default export */ __webpack_exports__["a"] = (MatrixGenerator);
 
 
 /***/ }),
-/* 11 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -640,33 +726,7 @@ class BFSSolver {
 
 
 /***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const resetPathDistance  = () => {
-  $("#path").text("0")
-}
-/* harmony export (immutable) */ __webpack_exports__["b"] = resetPathDistance;
-
-
-const incrementPathDistance = () => {
-  let currentDistance = parseInt($("#path").text())
-  currentDistance++
-  $("#path").text(currentDistance)
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = incrementPathDistance;
-
-
-// Source: femto113 via github
-// https://gist.github.com/femto113/1784503
-const transpose = (a) => a[0].map((_, c) => a.map(r => r[c]));
-/* harmony export (immutable) */ __webpack_exports__["c"] = transpose;
-
-
-
-/***/ }),
-/* 13 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -675,51 +735,58 @@ const transpose = (a) => a[0].map((_, c) => a.map(r => r[c]));
 
 
 
-
-class MatrixGenerator {
-  constructor(maze) {
+class DFSSolver {
+  constructor(maze){
     this.maze = maze
+    this.stack = [maze.start]
+    this.solve = this.solve.bind(this)
+    this.colorPath = this.colorPath.bind(this)
   }
 
-  generate() {
-    const rows = this.maze.grid
-    const cols = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* transpose */])(this.maze.grid)
-    console.log(rows);
-    console.log(cols);
-    rows.forEach( row => {
-      for (var i = 0; i < row.length - 1; i++) {
-        let cell = row[i]
-        cell.connectPath(row[i + 1])
-        cell.created = true
-        cell.draw()
-        if (i === row.length - 2) {
-          let lastCell = row[i + 1]
-          lastCell.created = true
-          lastCell.draw()
-        }
-      }
-    })
+  colorPath(cell) {
+    if (!cell) {
+      return
+    }
+    setTimeout( () => {
+      cell.path = true;
+      cell.draw()
+      this.colorPath(cell.parent)
+      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
+    }, 2)
+  }
 
-    cols.forEach( (col, colIdx) => {
-      for (var i = 0; i < col.length - 1; i++) {
-        if (colIdx % 2 === 0) { continue }
-        let cell = col[i]
-        cell.connectPath(col[i + 1])
-        cell.created = true
-        cell.draw()
-        if (i === col.length - 2) {
-          let lastCell = col[i + 1]
-          lastCell.created = true
-          lastCell.draw()
+  solve(i = 1){
+    if (this.solved) {
+      return
+    }
+    setTimeout( () => {
+      if (this.stack.length > 0) {
+        let currentCell = this.stack.shift()
+        currentCell.head = true;
+        this.maze.draw('solve');
+        if (!currentCell.visited) {
+          currentCell.visited = true
+          currentCell.i = i
+          let connectedNeighbors = currentCell.unvisitedConnectedCells()
+          connectedNeighbors.forEach( cell => cell.parent = currentCell)
+          this.stack = connectedNeighbors.concat(this.stack)
+        }
+        currentCell.head = false;
+        if (this.maze.end === currentCell) {
+          this.colorPath(this.maze.end)
+          Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+          this.solved = true
+        } else {
+          i++
+          this.solve(i);
         }
       }
-    })
-    this.maze.draw('solve');
-    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+    }, 0)
+
   }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (MatrixGenerator);
+/* harmony default export */ __webpack_exports__["a"] = (DFSSolver);
 
 
 /***/ })

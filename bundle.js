@@ -97,6 +97,7 @@ class Maze {
     this.reset = this.reset.bind(this)
     this._populateGrid = this._populateGrid.bind(this)
     this.grid = this._populateGrid();
+    this.start = this.getCell([0,0])
   }
 
   _populateGrid(){
@@ -322,18 +323,20 @@ const DIRS = {
 
 const bindAll = ctx => {
   const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx, 'large');
-  $('#generate-prims').click( ()=>{
+  $('#generate').click( ()=>{
     disableButtons();
     maze.reset('large')
+    const generatorType = $("input[name='generator']:checked").val();
+    let generator;
+    switch (generatorType) {
+      case 'prims':
+        generator = new __WEBPACK_IMPORTED_MODULE_2__prims_generator__["a" /* default */](maze)
+        break;
+      case 'dfs':
+        generator = new __WEBPACK_IMPORTED_MODULE_1__dfs_generator__["a" /* default */](maze)
+        break;
+    }
     ctx.clearRect(0,0,780,480)
-    const generator = new __WEBPACK_IMPORTED_MODULE_2__prims_generator__["a" /* default */](maze)
-    generator.generate();
-  })
-  $('#generate-start').click( ()=>{
-    disableButtons();
-    maze.reset('large')
-    ctx.clearRect(0,0,780,480)
-    const generator = new __WEBPACK_IMPORTED_MODULE_1__dfs_generator__["a" /* default */](maze)
     generator.generate();
   })
 
@@ -389,7 +392,7 @@ class DFSGenerator {
   constructor(maze){
     this.maze = maze
     this.stack = [this.maze.getCell([0,0])]
-    this.visitedCells = 1
+    this.visitedCells = 0
     this.generate = this.generate.bind(this)
     this.stack[0].created = true
   }
@@ -442,7 +445,7 @@ class PrimsGenerator {
     this.maze = maze
     this.frontier = maze.start.unvisitedNeighbors('created')
     this.generate = this.generate.bind(this)
-    maze.start.created = true
+    this.maze.start.created = true
   }
 
   generate(){

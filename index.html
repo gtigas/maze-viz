@@ -21,15 +21,25 @@
     <div class="canvas-container">
       <canvas id="canvas" width="780" height="480"></canvas>
       <div class="menu">
-        <button name="button" id='generate-start'>Generate (DFS)</button>
-        <button name="button" id='generate-prims'>Generate (Prims)</button>
+        <h2>Options</h2>
+        <h3>Generation</h3>
+        <div class='gen-options'>
+          <label>
+            <input type="radio" name="generator" value="prims" checked> Prims Algorithm
+          </label>
+          <label>
+            <input type="radio" name="generator" value="dfs"> Depth-first Search
+          </label>
+        </div>
+        <input type="range" name="maze-size" min="1" max="3" step="1">
+        <button name="button" id='generate'>Generate</button>
         <button name="button" id='reset-button' disabled >Reset Maze</button>
         <button name="button" id='maze-solve' disabled >Solve(BFS)</button>
         <button name="button" id='maze-dfs' disabled >Solve(DFS)</button>
         <br/>
-        <button name="button" id='random-start' disabled >Randomize Start</button>
+        <!-- <button name="button" id='random-start' disabled >Randomize Start</button>
         <button name="button" id='random-end' disabled >Randomize End</button>
-        <button name="button" id='random-both' disabled >Randomize Both</button>
+        <button name="button" id='random-both' disabled >Randomize Both</button> -->
       </div>
     </div>
     <p>By <a href="http://glenn.tig.as/">Glenn Tigas</a></p>

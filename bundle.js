@@ -356,9 +356,10 @@ class Solver {
       return
     }
     setTimeout( () => {
-      this.maze.draw('solve');
       if (this.stack.length > 0) {
         let currentCell = this.stack.shift()
+        currentCell.head = true;
+        this.maze.draw('solve');
         if (!currentCell.visited) {
           currentCell.visited = true
           currentCell.i = i
@@ -366,6 +367,7 @@ class Solver {
           connectedNeighbors.forEach( cell => cell.parent = currentCell)
           this.stack = connectedNeighbors.concat(this.stack)
         }
+        currentCell.head = false;
         if (this.maze.end === currentCell) {
           this.colorPath(this.maze.end)
           this.solved = true
@@ -464,9 +466,10 @@ class Dfs {
       return
     }
     setTimeout( () => {
-      this.maze.draw('solve');
       if (this.queue.length > 0) {
         let currentCell = this.queue.shift()
+        currentCell.head = true;
+        this.maze.draw('solve');
         if (!currentCell.visited) {
           currentCell.visited = true
           currentCell.i = i
@@ -474,6 +477,7 @@ class Dfs {
           connectedNeighbors.forEach( cell => cell.parent = currentCell)
           this.queue = this.queue.concat(connectedNeighbors)
         }
+        currentCell.head = false;
         if (this.maze.end === currentCell) {
           this.colorPath(this.maze.end)
           this.solved = true

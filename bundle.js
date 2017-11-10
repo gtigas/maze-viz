@@ -344,17 +344,22 @@ const bindAll = ctx => {
     maze.unSolve();
   })
 
-  $('#maze-solve').click( ()=>{
+  $('#solve').click( ()=>{
+    disableButtons();
     maze.unSolve();
-    const solver = new __WEBPACK_IMPORTED_MODULE_3__bfs_solver__["a" /* default */](maze)
+    const solverType = $("input[name='solver']:checked").val();
+    let solver;
+    switch (solverType) {
+      case 'bfs':
+        solver = new __WEBPACK_IMPORTED_MODULE_3__bfs_solver__["a" /* default */](maze)
+        break;
+      case 'dfs':
+        solver = new __WEBPACK_IMPORTED_MODULE_4__dfs_solver__["a" /* default */](maze)
+        break;
+    }
     solver.solve();
   })
 
-  $('#maze-dfs').click( ()=>{
-    maze.unSolve();
-    const solver = new __WEBPACK_IMPORTED_MODULE_4__dfs_solver__["a" /* default */](maze)
-    solver.solve();
-  })
   $('#random-start').click( ()=>{
     maze.randomize('start')
   })
@@ -392,7 +397,7 @@ class DFSGenerator {
   constructor(maze){
     this.maze = maze
     this.stack = [this.maze.getCell([0,0])]
-    this.visitedCells = 0
+    this.visitedCells = 1
     this.generate = this.generate.bind(this)
     this.stack[0].created = true
   }
@@ -488,6 +493,9 @@ class PrimsGenerator {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+
+
 class DFSSolver {
   constructor(maze){
     this.maze = maze
@@ -509,6 +517,7 @@ class DFSSolver {
 
   solve(i = 1){
     if (this.solved) {
+      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
       return
     }
     setTimeout( () => {
@@ -545,6 +554,9 @@ class DFSSolver {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+
+
 class BFSSolver {
   constructor(maze){
     this.maze = maze
@@ -566,6 +578,7 @@ class BFSSolver {
 
   solve(i = 1){
     if (this.solved) {
+      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
       return
     }
     setTimeout( () => {

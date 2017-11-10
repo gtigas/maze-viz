@@ -22,20 +22,29 @@
       <canvas id="canvas" width="780" height="480"></canvas>
       <div class="menu">
         <h2>Options</h2>
-        <h3>Generation</h3>
+        <h3>Generate</h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="generator" value="prims" checked> Prims Algorithm
           </label>
           <label>
-            <input type="radio" name="generator" value="dfs"> Depth-first Search
+            <input type="radio" name="generator" value="dfs"> Depth-First Search
           </label>
         </div>
         <input type="range" name="maze-size" min="1" max="3" step="1">
         <button name="button" id='generate'>Generate</button>
-        <button name="button" id='reset-button' disabled >Reset Maze</button>
-        <button name="button" id='maze-solve' disabled >Solve(BFS)</button>
-        <button name="button" id='maze-dfs' disabled >Solve(DFS)</button>
+        <br/>
+        <h3>Solve</h3>
+        <div class='gen-options'>
+          <label>
+            <input type="radio" name="solver" value="bfs" checked> Breadth-First Search
+          </label>
+          <label>
+            <input type="radio" name="solver" value="dfs"> Depth-First Search
+          </label>
+        </div>
+        <button name="button" id='solve' disabled >Solve</button>
+        <!-- <button name="button" id='reset-button' disabled >Reset Maze</button> -->
         <br/>
         <!-- <button name="button" id='random-start' disabled >Randomize Start</button>
         <button name="button" id='random-end' disabled >Randomize End</button>

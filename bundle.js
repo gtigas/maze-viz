@@ -175,6 +175,7 @@ class Cell {
     this.parent = null;
     this.xPosRender = x;
     this.yPosRender = y;
+    this.i = 1;
     this.connectedCells = [];
     this.ctx = ctx;
     this.maze = maze;
@@ -225,7 +226,10 @@ class Cell {
       this.ctx.fillStyle = "rgba(0, 0, 200, 0)"
     }
     if (this.visited) {
-      this.ctx.fillStyle = 'lightgreen'
+      const g = 240 - Math.floor(this.i * 0.439)
+      const b =  Math.floor(this.i * 0.439)
+      const r = Math.floor(this.i * 0.14)
+      this.ctx.fillStyle = `rgba(${r},${g},${b},1)`
     }
     if (this.path) {
       this.ctx.fillStyle = 'yellow'
@@ -279,16 +283,15 @@ class MazeGenerator {
     this.stack = []
     this.visitedCells = 1
     this.generate = this.generate.bind(this)
-    this.animate = this.animate.bind(this)
   }
 
   generate(){
     $('#generate-start').prop('disabled', true)
-    requestAnimationFrame(this.animate)
     this.stack.unshift(this.maze.getCell([0,0]))
     this.stack[0].created = true
     this.visitedCells++
     const renderMaze = setInterval( () => {
+      this.maze.draw()
       if (this.visitedCells < 590) {
         let currentCell = this.stack[0]
         currentCell.head = true
@@ -307,19 +310,13 @@ class MazeGenerator {
         }
       } else {
         clearInterval(renderMaze)
+        this.maze.draw('solve');
         $('#generate-start').prop('disabled', false)
       }
     }, 0)
 
   }
 
-  animate(){
-    this.maze.draw();
-    if (this.visitedCells === 590) {
-      return
-    }
-    requestAnimationFrame(this.animate)
-  }
 
 
 }
@@ -351,7 +348,7 @@ class Solver {
     }, 2)
   }
 
-  solve(){
+  solve(i = 1){
     if (this.solved) {
       return
     }
@@ -361,6 +358,7 @@ class Solver {
         let currentCell = this.stack.shift()
         if (!currentCell.visited) {
           currentCell.visited = true
+          currentCell.i = i
           let connectedNeighbors = currentCell.unvisitedConnectedCells()
           connectedNeighbors.forEach( cell => cell.parent = currentCell)
           this.stack = connectedNeighbors.concat(this.stack)
@@ -369,7 +367,8 @@ class Solver {
           this.colorPath(this.maze.end)
           this.solved = true
         } else {
-          this.solve();
+          i++
+          this.solve(i);
         }
       }
     }, 0)
@@ -397,7 +396,7 @@ class PrimsGenerator {
   generate(){
     $('#generate-prims').prop('disabled', true)
     if (this.frontier.length === 0) {
-      this.maze.draw()
+      this.maze.draw('solve')
       $('#generate-prims').prop('disabled', false)
       return
     }
@@ -454,7 +453,7 @@ class Dfs {
     }, 2)
   }
 
-  solve(){
+  solve(i = 1){
     if (this.solved) {
       return
     }
@@ -464,6 +463,7 @@ class Dfs {
         let currentCell = this.queue.shift()
         if (!currentCell.visited) {
           currentCell.visited = true
+          currentCell.i = i
           let connectedNeighbors = currentCell.unvisitedConnectedCells()
           connectedNeighbors.forEach( cell => cell.parent = currentCell)
           this.queue = this.queue.concat(connectedNeighbors)
@@ -472,7 +472,8 @@ class Dfs {
           this.colorPath(this.maze.end)
           this.solved = true
         } else {
-          this.solve();
+          i++
+          this.solve(i);
         }
       }
     }, 0)
@@ -502,19 +503,16 @@ class Dfs {
 const bindAll = ctx => {
   const maze = new __WEBPACK_IMPORTED_MODULE_0__maze__["a" /* default */](ctx);
   $('#generate-prims').click( ()=>{
+    maze.reset()
     ctx.clearRect(0,0,780,480)
     const generator = new __WEBPACK_IMPORTED_MODULE_2__prims__["a" /* default */](maze)
     generator.generate();
   })
   $('#generate-start').click( ()=>{
+    maze.reset()
     ctx.clearRect(0,0,780,480)
     const generator = new __WEBPACK_IMPORTED_MODULE_1__generator__["a" /* default */](maze)
     generator.generate();
-  })
-
-  $('#clear-button').click( ()=>{
-    maze.reset();
-    ctx.clearRect(0,0,780,480)
   })
 
   $('#reset-button').click( ()=>{
@@ -522,11 +520,13 @@ const bindAll = ctx => {
   })
 
   $('#maze-solve').click( ()=>{
+    maze.unSolve();
     const solver = new __WEBPACK_IMPORTED_MODULE_3__solver__["a" /* default */](maze)
     solver.solve();
   })
 
   $('#maze-dfs').click( ()=>{
+    maze.unSolve();
     const solver = new __WEBPACK_IMPORTED_MODULE_4__dfs__["a" /* default */](maze)
     solver.solve();
   })

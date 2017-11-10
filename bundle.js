@@ -95,9 +95,13 @@ document.addEventListener("DOMContentLoaded", () => {
     generator.generate();
   })
 
-  $('#maze-clear').click( ()=>{
+  $('#clear-button').click( ()=>{
     maze.reset();
     ctx.clearRect(0,0,780,480)
+  })
+
+  $('#reset-button').click( ()=>{
+    maze.unSolve();
   })
 
   $('#maze-solve').click( ()=>{
@@ -151,6 +155,15 @@ class Maze {
     this.end = this.getCell([18,30])
   }
 
+  unSolve(){
+    const allCells = [].concat(...this.grid)
+    allCells.forEach( cell => {
+      cell.path = false;
+      cell.visited = false
+      cell.draw();
+    })
+  }
+
   getCell(pos){
     let [x, y] = pos
     return this.grid[x][y]
@@ -175,6 +188,8 @@ class Cell {
     this.created = false;
     this.visited = false;
     this.path = false;
+    this.start = false;
+    this.end = false;
     this.pos = pos;
     this.parent = null;
     this.xPosRender = x;
@@ -226,7 +241,7 @@ class Cell {
     if (this.created) {
       this.ctx.fillStyle = 'white'
     } else {
-      this.ctx.fillStyle = 'grey'
+      this.ctx.fillStyle = "rgba(0, 0, 200, 0)"
     }
     if (this.visited) {
       this.ctx.fillStyle = 'green'
@@ -295,6 +310,7 @@ class MazeGenerator {
     const renderMaze = setInterval( () => {
       if (this.visitedCells < 590) {
         let currentCell = this.stack[0]
+        currentCell.head = true
         let unvisitedNeighbors = currentCell.unvisitedNeighbors('created')
         if (unvisitedNeighbors.length > 0) {
           unvisitedNeighbors.forEach( cell => {
@@ -306,7 +322,6 @@ class MazeGenerator {
           currentCell.head = false
           currentCell = randomCell
           currentCell.created = true
-          currentCell.head = true
           this.visitedCells++
         } else {
           this.stack.shift().head = false;
@@ -356,7 +371,7 @@ class Solver {
       cell.path = true;
       cell.draw()
       this.colorPath(cell.parent)
-    }, 10)
+    }, 2)
   }
 
   solve(){
@@ -405,13 +420,14 @@ class PrimsGenerator {
     $('#generate-prims').prop('disabled', true)
     if (this.frontier.length === 0) {
       this.maze.draw()
-      $('#generate-prims').prop('disabled', true)
+      $('#generate-prims').prop('disabled', false)
       return
     }
     setTimeout( () => {
-      this.maze.draw(); 
       if (this.frontier.length > 0) {
         let randomCell = this.frontier.splice([Math.floor(Math.random() * this.frontier.length)], 1)[0]
+        randomCell.head = true
+        this.maze.draw(); 
         let mazeNeighbors = randomCell.mazeNeighbors();
         let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
         randomCell.connectPath(randomMazeNeighbor)
@@ -424,9 +440,10 @@ class PrimsGenerator {
           })
         })
         this.frontier = this.frontier.concat(unvisitedNeighbors)
+        randomCell.head = false
         this.generate()
       }
-    }, 0)
+    }, 5)
   }
 
 
@@ -456,7 +473,7 @@ class Dfs {
       cell.path = true;
       cell.draw()
       this.colorPath(cell.parent)
-    }, 10)
+    }, 2)
   }
 
   solve(){

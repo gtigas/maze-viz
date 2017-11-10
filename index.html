@@ -2,20 +2,25 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Maze-Viz</title>
+    <title>Maze Viz</title>
     <link rel="stylesheet" href="./assets/styles/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:bold' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
     <script src="./bundle.js" charset="utf-8"></script>
     <script src="./vendor/jquery-3.2.1.min.js" charset="utf-8"></script>
   </head>
   <body>
-    <h1>Maze Viz</h1>
+    <h1>MAZE VIZ</h1>
     <div class="canvas-container">
       <canvas id="canvas" width="780" height="480"></canvas>
-      <button name="button" id='generate-start'>Generate (DFS)</button>
-      <button name="button" id='generate-prims'>Generate (Prims)</button>
-      <button name="button" id='maze-clear'>Clear Maze</button>
-      <button name="button" id='maze-solve'>Solve</button>
-      <button name="button" id='maze-dfs'>DFS</button>
+      <div class="">
+        <button name="button" id='generate-start'>Generate (DFS)</button>
+        <button name="button" id='generate-prims'>Generate (Prims)</button>
+        <button name="button" id='clear-button'>Clear Maze</button>
+        <button name="button" id='reset-button'>Reset Maze</button>
+        <button name="button" id='maze-solve'>Solve</button>
+        <button name="button" id='maze-dfs'>DFS</button>
+      </div>
     </div>
   </body>
 </html>

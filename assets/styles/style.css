@@ -28,7 +28,28 @@ h1 {
   font-size: 50px;
   line-height: 65px;
   text-shadow: -1px -1px 1px #FFFFFF, 1px 1px 1px #000000;
-  font-weight: 700
+  font-weight: 700;
+  margin-bottom: 6px
+}
+
+.nav {
+  width: 300px;
+  margin: 0 auto;
+}
+
+.nav ul{
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0;
+  margin-top: 5px;
+}
+
+.nav li:hover {
+  cursor: pointer;
+  color: lightgreen;
+  transition: 0.3s;
 }
 
 p {

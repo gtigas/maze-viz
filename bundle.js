@@ -118,6 +118,7 @@ class Maze {
 
   unSolve(){
     this.allCells().forEach( cell => {
+      cell.parent = null
       cell.path = false;
       cell.visited = false
       cell.draw();

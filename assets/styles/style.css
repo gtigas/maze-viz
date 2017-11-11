@@ -51,6 +51,8 @@ h4 {
 h5 {
   color: black;
   font-size: 15px;
+  margin-top: 2px;
+  margin-bottom: 5px;
 }
 
 .nav {
@@ -115,12 +117,12 @@ p {
   border: none;
   color: #fff;
   background-color: black;
-  padding: 5px 16px;
+  padding: 8px 16px;
   letter-spacing: 1px;
   text-transform: uppercase;
   margin: 0 auto;
-  margin-top: 10px;
-  width: 97px;
+  margin-top: 5px;
+  width: 100px;
 }
 
 .menu button:disabled {

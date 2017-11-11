@@ -6,17 +6,16 @@
     <link rel="stylesheet" href="./assets/styles/style.css">
     <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <script src="./vendor/jquery-3.2.1.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     <script src="https://use.fontawesome.com/7aa53fd983.js"></script>
     <script src="./bundle.js" charset="utf-8"></script>
-    <script src="./vendor/jquery-3.2.1.min.js" charset="utf-8"></script>
   </head>
   <body>
     <h1>MAZE VIZ</h1>
     <div class="nav">
-      <ul>
-        <li>Instructions</li>
-        <li>Algorithms</li>
-      </ul>
+      <a href="#algorithms" rel="modal:open">Algorithms</a>
     </div>
     <div class="canvas-container">
       <canvas id="canvas" width="780" height="480"></canvas>
@@ -47,6 +46,9 @@
           <label>
             <input type="radio" name="solver" value="dfs"> Depth-First Search
           </label>
+          <label>
+            <input type="radio" name="solver" value="aStar"> A* Algorithm
+          </label>
         </div>
         <button name="button" id='solve' disabled >Solve</button>
         <button name="button" id='random-both' disabled >Randomize Start/End</button>
@@ -60,6 +62,14 @@
           </div>
         </div>
       </div>
+    </div>
+    <div id='algorithms' class="modal">
+      <ul>
+        <li>Prims Algorithm - Start with the top left cell and add it to the maze. Repeat the following until finished: select a random neighbor of those cells already in the maze and add it to the maze.
+        </li>
+        <li>Depth-First - Searches a path as far as it can go. After reaching a wall, it backtracks back to the last fork with paths not visited and continues searching. Repeat until the end is found or all cells have been visited/created.</li>
+        <li>Breadth-First</li>
+      </ul>
     </div>
     <p>By <a href="http://glenn.tig.as/">Glenn Tigas</a></p>
     <div class="contact-links">

@@ -56,18 +56,10 @@ h5 {
 .nav {
   width: 300px;
   margin: 0 auto;
+  margin-bottom: 15px;
 }
 
-.nav ul{
-  list-style: none;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0;
-  margin-top: 5px;
-}
-
-.nav li:hover {
+.nav a:hover {
   cursor: pointer;
   color: lightgreen;
   transition: 0.3s;
@@ -104,6 +96,11 @@ p {
   flex-direction: column;
   align-items: flex-start;
   padding: 0 15px;
+}
+
+#algorithms {
+  background-color: white;
+  color: black;
 }
 
 .menu label {

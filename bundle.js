@@ -125,12 +125,14 @@ class Maze {
 
   unSolve(){
     this.allCells().forEach( cell => {
+      cell.distance = 9999
       cell.parent = null
       cell.path = false;
       cell.visited = false
       cell.draw();
     })
   }
+
 
   getCell(pos){
     let [x, y] = pos
@@ -206,6 +208,7 @@ class Cell {
     this.end = false;
     this.pos = pos;
     this.parent = null;
+    this.distance = 9999;
     this.xPosRender = x;
     this.yPosRender = y;
     this.i = 1;
@@ -251,6 +254,11 @@ class Cell {
     this.connectedCells.push(otherCell)
     otherCell.connectedCells.push(this)
   }
+
+
+  getDistance(otherCell){
+    return (Math.abs(this.pos[0] - otherCell.pos[0]) + Math.abs(this.pos[1] - otherCell.pos[1]))
+    }
 
   draw(){
     if (this.created) {
@@ -322,7 +330,9 @@ const DIRS = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__generators_grid_generator__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__solvers_bfs_solver__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__solvers_dfs_solver__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__util__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__solvers_aStar_solver__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__util__ = __webpack_require__(12);
+
 
 
 
@@ -383,7 +393,7 @@ const bindAll = ctx => {
   })
 
   $('#solve').click( ()=>{
-    Object(__WEBPACK_IMPORTED_MODULE_6__util__["b" /* resetPathDistance */])();
+    Object(__WEBPACK_IMPORTED_MODULE_7__util__["b" /* resetPathDistance */])();
     disableButtons();
     maze.unSolve();
     const solverType = $("input[name='solver']:checked").val();
@@ -395,12 +405,15 @@ const bindAll = ctx => {
       case 'dfs':
         solver = new __WEBPACK_IMPORTED_MODULE_5__solvers_dfs_solver__["a" /* default */](maze)
         break;
+      case 'aStar':
+        solver = new __WEBPACK_IMPORTED_MODULE_6__solvers_aStar_solver__["a" /* default */](maze)
+        break;
     }
     solver.solve();
   })
 
   $('#random-both').click( ()=>{
-    Object(__WEBPACK_IMPORTED_MODULE_6__util__["b" /* resetPathDistance */])();
+    Object(__WEBPACK_IMPORTED_MODULE_7__util__["b" /* resetPathDistance */])();
     maze.unSolve();
     maze.randomize('both')
   })
@@ -789,6 +802,84 @@ class DFSSolver {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (DFSSolver);
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(12);
+
+
+
+class AStarSolver {
+  constructor(maze){
+    this.maze = maze
+    this.frontier = [maze.start]
+    this.solve = this.solve.bind(this)
+    this.colorPath = this.colorPath.bind(this)
+    this.getBestCell = this.getBestCell.bind(this)
+  }
+
+  colorPath(cell) {
+    if (!cell) {
+      return
+    }
+    setTimeout( () => {
+      cell.path = true;
+      cell.draw()
+      this.colorPath(cell.parent)
+      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
+    }, 2)
+  }
+
+  solve(i = 1){
+    if (this.solved) {
+      return
+    }
+    setTimeout( () => {
+      const currentCell = this.getBestCell();
+      currentCell.head = true
+      this.maze.draw('solve');
+      currentCell.visited = true
+      let cellNeighbors = currentCell.unvisitedConnectedCells()
+      cellNeighbors.forEach( cell => {
+        cell.parent = currentCell
+        cell.distance = cell.getDistance(this.maze.end)
+      })
+      debugger
+      this.frontier = this.frontier.concat(cellNeighbors)
+      currentCell.head = false;
+      if (this.maze.end === currentCell) {
+        this.colorPath(this.maze.end)
+        Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+        this.solved = true
+      } else {
+        i++
+        this.solve(i);
+      }
+    }, 0)
+
+  }
+
+  getBestCell(){
+    let closestCell = null;
+    let distance = 10000;
+    this.frontier.forEach( cell => {
+      if (cell.distance < distance) {
+        closestCell = cell
+        distance = cell.distance
+      }
+    });
+
+    this.frontier.splice(this.frontier.indexOf(closestCell), 1)
+    return closestCell
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (AStarSolver);
 
 
 /***/ })

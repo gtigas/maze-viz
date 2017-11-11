@@ -844,6 +844,7 @@ class AStarSolver {
       currentCell.head = true
       this.maze.draw('solve');
       currentCell.visited = true
+      currentCell.i = i
       let cellNeighbors = currentCell.unvisitedConnectedCells()
       cellNeighbors.forEach( cell => {
         cell.parent = currentCell

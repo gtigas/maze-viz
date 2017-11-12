@@ -270,7 +270,7 @@ class Cell {
       const g = 240 - Math.floor(this.i * 0.439)
       const b =  Math.floor(this.i * 0.439)
       const r = Math.floor(this.i * 0.14)
-      this.ctx.fillStyle = `rgba(${r},${g},${b},1)`
+      this.ctx.fillStyle = `rgb(${r},${g},${b})`
     }
     if (this.path) {
       this.ctx.fillStyle = 'yellow'
@@ -326,7 +326,7 @@ const DIRS = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__maze__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__generators_dfs_generator__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__generators_prims_generator__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__generators_random_generator__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__generators_grid_generator__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__solvers_bfs_solver__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__solvers_dfs_solver__ = __webpack_require__(18);
@@ -351,8 +351,8 @@ const bindAll = ctx => {
     const generatorType = $("input[name='generator']:checked").val();
     let generator;
     switch (generatorType) {
-      case 'prims':
-        generator = new __WEBPACK_IMPORTED_MODULE_2__generators_prims_generator__["a" /* default */](maze)
+      case 'random':
+        generator = new __WEBPACK_IMPORTED_MODULE_2__generators_random_generator__["a" /* default */](maze)
         break;
       case 'dfs':
         generator = new __WEBPACK_IMPORTED_MODULE_1__generators_dfs_generator__["a" /* default */](maze)
@@ -372,8 +372,8 @@ const bindAll = ctx => {
     const generatorType = $("input[name='generator']:checked").val();
     let generator;
     switch (generatorType) {
-      case 'prims':
-        generator = new __WEBPACK_IMPORTED_MODULE_2__generators_prims_generator__["a" /* default */](maze)
+      case 'random':
+        generator = new __WEBPACK_IMPORTED_MODULE_2__generators_random_generator__["a" /* default */](maze)
         break;
       case 'dfs':
         generator = new __WEBPACK_IMPORTED_MODULE_1__generators_dfs_generator__["a" /* default */](maze)
@@ -559,79 +559,7 @@ class DFSGenerator {
 
 
 /***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
-
-
-
-class PrimsGenerator {
-  constructor(maze){
-    this.maze = maze
-    this.frontier = maze.start.unvisitedNeighbors('created')
-    this.generate = this.generate.bind(this)
-    this.maze.start.created = true
-  }
-
-  generateFast(){
-    while (this.frontier.length > 0) {
-      let randomCell = this.frontier.splice([Math.floor(Math.random() * this.frontier.length)], 1)[0]
-      randomCell.head = true
-      let mazeNeighbors = randomCell.mazeNeighbors();
-      let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
-      randomCell.connectPath(randomMazeNeighbor)
-      randomCell.parent = randomMazeNeighbor
-      randomCell.created = true
-      const unvisitedNeighbors = randomCell.unvisitedNeighbors('created')
-      unvisitedNeighbors.forEach( cell => {
-        this.frontier = this.frontier.filter( frontier => {
-          return frontier.pos.toString() !== cell.pos.toString()
-        })
-      })
-      this.frontier = this.frontier.concat(unvisitedNeighbors)
-      randomCell.head = false
-    }
-    this.maze.draw('solve')
-    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
-  }
-  generate(){
-    if (this.frontier.length === 0) {
-      this.maze.draw('solve')
-      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
-      return
-    }
-    setTimeout( () => {
-      if (this.frontier.length > 0) {
-        let randomCell = this.frontier.splice([Math.floor(Math.random() * this.frontier.length)], 1)[0]
-        randomCell.head = true
-        this.maze.draw(); 
-        let mazeNeighbors = randomCell.mazeNeighbors();
-        let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
-        randomCell.connectPath(randomMazeNeighbor)
-        randomCell.parent = randomMazeNeighbor
-        randomCell.created = true
-        const unvisitedNeighbors = randomCell.unvisitedNeighbors('created')
-        unvisitedNeighbors.forEach( cell => {
-          this.frontier = this.frontier.filter( frontier => {
-            return frontier.pos.toString() !== cell.pos.toString()
-          })
-        })
-        this.frontier = this.frontier.concat(unvisitedNeighbors)
-        randomCell.head = false
-        this.generate()
-      }
-    }, 0)
-  }
-
-
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (PrimsGenerator);
-
-
-/***/ }),
+/* 15 */,
 /* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -856,6 +784,79 @@ class AStarSolver {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (AStarSolver);
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__binders__ = __webpack_require__(7);
+
+
+
+class RandomGenerator {
+  constructor(maze){
+    this.maze = maze
+    this.frontier = maze.start.unvisitedNeighbors('created')
+    this.generate = this.generate.bind(this)
+    this.maze.start.created = true
+  }
+
+  generateFast(){
+    while (this.frontier.length > 0) {
+      let randomCell = this.frontier.splice([Math.floor(Math.random() * this.frontier.length)], 1)[0]
+      randomCell.head = true
+      let mazeNeighbors = randomCell.mazeNeighbors();
+      let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
+      randomCell.connectPath(randomMazeNeighbor)
+      randomCell.parent = randomMazeNeighbor
+      randomCell.created = true
+      const unvisitedNeighbors = randomCell.unvisitedNeighbors('created')
+      unvisitedNeighbors.forEach( cell => {
+        this.frontier = this.frontier.filter( frontier => {
+          return frontier.pos.toString() !== cell.pos.toString()
+        })
+      })
+      this.frontier = this.frontier.concat(unvisitedNeighbors)
+      randomCell.head = false
+    }
+    this.maze.draw('solve')
+    Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+  }
+  generate(){
+    if (this.frontier.length === 0) {
+      this.maze.draw('solve')
+      Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
+      return
+    }
+    setTimeout( () => {
+      if (this.frontier.length > 0) {
+        let randomCell = this.frontier.splice([Math.floor(Math.random() * this.frontier.length)], 1)[0]
+        randomCell.head = true
+        this.maze.draw(); 
+        let mazeNeighbors = randomCell.mazeNeighbors();
+        let randomMazeNeighbor = mazeNeighbors[Math.floor(Math.random() * mazeNeighbors.length)]
+        randomCell.connectPath(randomMazeNeighbor)
+        randomCell.parent = randomMazeNeighbor
+        randomCell.created = true
+        const unvisitedNeighbors = randomCell.unvisitedNeighbors('created')
+        unvisitedNeighbors.forEach( cell => {
+          this.frontier = this.frontier.filter( frontier => {
+            return frontier.pos.toString() !== cell.pos.toString()
+          })
+        })
+        this.frontier = this.frontier.concat(unvisitedNeighbors)
+        randomCell.head = false
+        this.generate()
+      }
+    }, 0)
+  }
+
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (RandomGenerator);
 
 
 /***/ })

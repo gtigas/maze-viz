@@ -15,7 +15,7 @@
   <body>
     <h1>MAZE VIZ</h1>
     <div class="nav">
-      <a href="#algorithms" rel="modal:open">Algorithms</a>
+      <a href="#algorithms" rel="modal:open">Explanations</a>
     </div>
     <div class="canvas-container">
       <canvas id="canvas" width="780" height="480"></canvas>
@@ -27,7 +27,7 @@
         <h3>Generator</h3>
         <div class='gen-options'>
           <label>
-            <input type="radio" name="generator" value="prims" checked> Prims Algorithm
+            <input type="radio" name="generator" value="random" checked> Random Generator
           </label>
           <label>
             <input type="radio" name="generator" value="dfs"> Depth-First
@@ -65,9 +65,11 @@
     </div>
     <div id='algorithms' class="modal">
       <ul>
-        <li><h3>Prims Algorithm</h3> - Start with the top left cell and add it to the maze. Select a random neighbor of those cells already in the maze and add it to the maze. Repeat until all cells have been added to the maze.
+        <li><h3>Random Generator</h3> - Start with the top left cell and add it to the maze. Select a random neighbor of those cells already in the maze and add it to the maze. Repeat until all cells have been added to the maze.
         </li>
         <li><h3>Depth-First</h3> - Searches a path as far as it can go. After reaching a wall, it backtracks back to the last fork with paths not visited and continues searching. Repeat until the end is found or all cells have been visited/created.</li>
+        <li><h3>Matrix</h3> - Create a grid-like maze to showcase different solver strengths/weaknesses.
+        </li>
         <li><h3>Breadth-First</h3> - Starting with the maze start, find all connected cells and add the to the queue. For each of those cells in the queue, check to see if any of them are the end. If not, add each one of their connected cells to the queue. Repeat until the ending is found or the queue is empty. </li>
         <li><h3>A*</h3> - Starting with the maze start, assign all of the connected cells a distance based on how far away from the maze end they are (ignoring walls) and add it to a collection. Select a new cell from that collection with the lowest distance (and has not been visited) and assign a distance to each one of their neighbors. Repeat until the ending is found of the collection is empty. </li>
       </ul>

@@ -380,9 +380,6 @@ const bindAll = ctx => {
         break;
       case 'matrix':
         generator = new __WEBPACK_IMPORTED_MODULE_3__generators_grid_generator__["a" /* default */](maze)
-        ctx.clearRect(0,0,780,480)
-        generator.generate();
-        return
     }
     ctx.clearRect(0,0,780,480)
     generator.generateFast();
@@ -463,7 +460,21 @@ const incrementPathDistance = () => {
   currentDistance++
   $("#path").text(currentDistance)
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = incrementPathDistance;
+/* unused harmony export incrementPathDistance */
+
+
+const colorPath = cell => {
+  if (!cell) {
+    return
+  }
+  setTimeout( () => {
+    cell.path = true;
+    cell.draw()
+    colorPath(cell.parent)
+    incrementPathDistance();
+  }, 2)
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = colorPath;
 
 
 // Source: femto113 via github
@@ -636,6 +647,10 @@ class MatrixGenerator {
     this.maze = maze
   }
 
+  generateFast() {
+    this.generate.bind(this)();
+  }
+
   generate() {
     const rows = this.maze.grid
     const cols = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* transpose */])(this.maze.grid)
@@ -689,21 +704,8 @@ class MatrixGenerator {
 class BFSSolver {
   constructor(maze){
     this.maze = maze
-    this.queue = [maze.start]
+    this.frontier = [maze.start]
     this.solve = this.solve.bind(this)
-    this.colorPath = this.colorPath.bind(this)
-  }
-
-  colorPath(cell) {
-    if (!cell) {
-      return
-    }
-    setTimeout( () => {
-      cell.path = true;
-      cell.draw()
-      this.colorPath(cell.parent)
-      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
-    }, 2)
   }
 
   solve(i = 1){
@@ -711,8 +713,8 @@ class BFSSolver {
       return
     }
     setTimeout( () => {
-      if (this.queue.length > 0) {
-        let currentCell = this.queue.shift()
+      if (this.frontier.length > 0) {
+        let currentCell = this.frontier.shift()
         currentCell.head = true;
         this.maze.draw('solve');
         if (!currentCell.visited) {
@@ -720,11 +722,11 @@ class BFSSolver {
           currentCell.i = i
           let connectedNeighbors = currentCell.unvisitedConnectedCells()
           connectedNeighbors.forEach( cell => cell.parent = currentCell)
-          this.queue = this.queue.concat(connectedNeighbors)
+          this.frontier = this.frontier.concat(connectedNeighbors)
         }
         currentCell.head = false;
         if (this.maze.end === currentCell) {
-          this.colorPath(this.maze.end)
+          Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* colorPath */])(this.maze.end)
           Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
           this.solved = true
         } else {
@@ -753,21 +755,8 @@ class BFSSolver {
 class DFSSolver {
   constructor(maze){
     this.maze = maze
-    this.stack = [maze.start]
+    this.frontier = [maze.start]
     this.solve = this.solve.bind(this)
-    this.colorPath = this.colorPath.bind(this)
-  }
-
-  colorPath(cell) {
-    if (!cell) {
-      return
-    }
-    setTimeout( () => {
-      cell.path = true;
-      cell.draw()
-      this.colorPath(cell.parent)
-      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
-    }, 2)
   }
 
   solve(i = 1){
@@ -775,8 +764,8 @@ class DFSSolver {
       return
     }
     setTimeout( () => {
-      if (this.stack.length > 0) {
-        let currentCell = this.stack.shift()
+      if (this.frontier.length > 0) {
+        let currentCell = this.frontier.shift()
         currentCell.head = true;
         this.maze.draw('solve');
         if (!currentCell.visited) {
@@ -784,11 +773,11 @@ class DFSSolver {
           currentCell.i = i
           let connectedNeighbors = currentCell.unvisitedConnectedCells()
           connectedNeighbors.forEach( cell => cell.parent = currentCell)
-          this.stack = connectedNeighbors.concat(this.stack)
+          this.frontier = connectedNeighbors.concat(this.frontier)
         }
         currentCell.head = false;
         if (this.maze.end === currentCell) {
-          this.colorPath(this.maze.end)
+          Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* colorPath */])(this.maze.end)
           Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
           this.solved = true
         } else {
@@ -819,20 +808,7 @@ class AStarSolver {
     this.maze = maze
     this.frontier = [maze.start]
     this.solve = this.solve.bind(this)
-    this.colorPath = this.colorPath.bind(this)
     this.getBestCell = this.getBestCell.bind(this)
-  }
-
-  colorPath(cell) {
-    if (!cell) {
-      return
-    }
-    setTimeout( () => {
-      cell.path = true;
-      cell.draw()
-      this.colorPath(cell.parent)
-      Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* incrementPathDistance */])();
-    }, 2)
   }
 
   solve(i = 1){
@@ -850,11 +826,10 @@ class AStarSolver {
         cell.parent = currentCell
         cell.distance = cell.getDistance(this.maze.end)
       })
-      debugger
       this.frontier = this.frontier.concat(cellNeighbors)
       currentCell.head = false;
       if (this.maze.end === currentCell) {
-        this.colorPath(this.maze.end)
+        Object(__WEBPACK_IMPORTED_MODULE_1__util__["a" /* colorPath */])(this.maze.end)
         Object(__WEBPACK_IMPORTED_MODULE_0__binders__["b" /* enableButtons */])();
         this.solved = true
       } else {

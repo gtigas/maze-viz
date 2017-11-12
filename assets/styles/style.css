@@ -105,6 +105,14 @@ p {
   color: black;
 }
 
+#algorithms ul {
+  padding-left: 15px;
+}
+
+#algorithms li {
+  margin-bottom: 30px;
+}
+
 .menu label {
   color: black;
   font-size: 12px;

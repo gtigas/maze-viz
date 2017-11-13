@@ -14,9 +14,6 @@
   </head>
   <body>
     <h1>MAZE VIZ</h1>
-    <div class="nav">
-      <a href="#algorithms" rel="modal:open">Explanations</a>
-    </div>
     <div class="canvas-container">
       <canvas id="canvas" width="780" height="480"></canvas>
       <div class="menu">
@@ -24,7 +21,7 @@
         <h3>Maze Size</h3>
         <input type="range" id="maze-size" name="maze-size" min="1" max="3" step="1">
         <h4 id="range-text">Medium</h4>
-        <h3>Generator</h3>
+        <h3>Generator<a href="#algorithms" rel="modal:open"><i class="fa fa-question-circle info" aria-hidden="true"></i></a></h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="generator" value="random" checked> Random Generator
@@ -38,7 +35,7 @@
         </div>
         <button name="button" id='generate'>Generate</button>
         <button name="button" id='generate-fast'>Generate (fast)</button>
-        <h3>Solver</h3>
+        <h3>Solver<a href="#algorithms" rel="modal:open"><i class="fa fa-question-circle info" aria-hidden="true"></i></a></h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="solver" value="bfs" checked> Breadth-First Search

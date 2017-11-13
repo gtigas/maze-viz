@@ -267,9 +267,9 @@ class Cell {
       this.ctx.fillStyle = "rgba(0, 0, 200, 0)"
     }
     if (this.visited) {
+      const r = Math.floor(this.i * 0.14)
       const g = 240 - Math.floor(this.i * 0.439)
       const b =  Math.floor(this.i * 0.439)
-      const r = Math.floor(this.i * 0.14)
       this.ctx.fillStyle = `rgb(${r},${g},${b})`
     }
     if (this.path) {
@@ -777,6 +777,7 @@ class AStarSolver {
         distance = cell.distance
       }
     });
+
 
     this.frontier.splice(this.frontier.indexOf(closestCell), 1)
     return closestCell

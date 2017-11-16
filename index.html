@@ -7,6 +7,7 @@
     <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <link href="./assets/favicon.ico" rel="icon" type="image/x-icon" />
     <script src="./vendor/jquery-3.2.1.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     <script src="https://use.fontawesome.com/7aa53fd983.js"></script>
@@ -21,7 +22,7 @@
         <h3>Maze Size</h3>
         <input type="range" id="maze-size" name="maze-size" min="1" max="3" step="1">
         <h4 id="range-text">Medium</h4>
-        <h3>Generator<a href="#algorithms" rel="modal:open"><i class="fa fa-question-circle info" aria-hidden="true"></i></a></h3>
+        <h3>Generator<a href="#algorithms-1" rel="modal:open"><i class="fa fa-question-circle info" aria-hidden="true"></i></a></h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="generator" value="random" checked> Random Generator
@@ -35,7 +36,7 @@
         </div>
         <button name="button" id='generate'>Generate</button>
         <button name="button" id='generate-fast'>Generate (fast)</button>
-        <h3>Solver<a href="#algorithms" rel="modal:open"><i class="fa fa-question-circle info" aria-hidden="true"></i></a></h3>
+        <h3>Solver<a href="#algorithms-2" rel="modal:open"><i class="fa fa-question-circle info" aria-hidden="true"></i></a></h3>
         <div class='gen-options'>
           <label>
             <input type="radio" name="solver" value="bfs" checked> Breadth-First Search
@@ -60,14 +61,21 @@
         </div>
       </div>
     </div>
-    <div id='algorithms' class="modal">
+    <div id='algorithms-1' class="modal">
+      <h2>Generators</h2>
       <ul>
         <li><h3>Random Generator</h3> - Start with the top left cell and add it to the maze. Select a random neighbor of those cells already in the maze and add it to the maze. Repeat until all cells have been added to the maze.
         </li>
-        <li><h3>Depth-First</h3> - Searches a path as far as it can go. After reaching a wall, it backtracks back to the last fork with paths not visited and continues searching. Repeat until the end is found or all cells have been visited/created.</li>
+        <li><h3>Depth-First</h3> - Start with the top left cell and add it to the maze. From that cell, pick a neighboring cell and add it to the maze. Mark that cell as the current cell and continue picking neighbors and adding it to the maze. If a cell has no neighboring cells not already in the maze, backtrack back to the last cell with available neighbors. Repeat until all cells have been added to the maze.</li>
         <li><h3>Matrix</h3> - Create a grid-like maze to showcase different solver strengths/weaknesses.
         </li>
+      </ul>
+    </div>
+    <div id='algorithms-2' class="modal">
+      <h2>Solvers</h2>
+      <ul>
         <li><h3>Breadth-First</h3> - Starting with the maze start, find all connected cells and add the to the queue. For each of those cells in the queue, check to see if any of them are the end. If not, add each one of their connected cells to the queue. Repeat until the ending is found or the queue is empty. </li>
+        <li><h3>Depth-First</h3> - Searches a path as far as it can go. After reaching a wall, it backtracks back to the last fork with paths not visited and continues searching. Repeat until the end is found or all cells have been visited.</li>
         <li><h3>A*</h3> - Starting with the maze start, assign all of the connected cells a distance based on how far away from the maze end they are (ignoring walls) and add it to a collection. Select a new cell from that collection with the lowest distance (and has not been visited) and assign a distance to each one of their neighbors. Repeat until the ending is found of the collection is empty. </li>
       </ul>
     </div>
